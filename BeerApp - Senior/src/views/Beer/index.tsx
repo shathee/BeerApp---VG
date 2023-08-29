@@ -43,26 +43,32 @@ const Beer: React.FC = () => {
 
   useEffect(() => {
     const storedFavourites = localStorage.getItem("favouriteBeerData");
+
     if (storedFavourites && beer) {
-      const favIds: string[] = JSON.parse(storedFavourites);
-      setIsInFavourite(favIds.includes(beer.id));
+      const favourites: IBeer[] = JSON.parse(storedFavourites);
+
+      setIsInFavourite(
+        favourites.filter((favourite) => favourite.id === beer.id).length > 0
+      );
     }
   }, [beer]);
 
   const handleAddToFavourite = () => {
     if (beer) {
       const storedFavourites = localStorage.getItem("favouriteBeerData");
-      let favIds: string[] = storedFavourites
+      let favourites: IBeer[] = storedFavourites
         ? JSON.parse(storedFavourites)
         : [];
 
       if (isInFavourite) {
-        favIds = favIds.filter((id: string) => id !== beer?.id);
+        favourites = favourites.filter(
+          (beerinp: IBeer) => beerinp.id !== beer?.id
+        );
       } else {
-        favIds.push(beer.id);
+        favourites.push(beer);
       }
 
-      localStorage.setItem("favouriteBeerData", JSON.stringify(favIds));
+      localStorage.setItem("favouriteBeerData", JSON.stringify(favourites));
       setIsInFavourite(!isInFavourite);
     }
   };
