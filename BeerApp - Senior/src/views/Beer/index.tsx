@@ -25,6 +25,7 @@ import { useParams } from "react-router-dom";
 import styles from "./Beer.module.css";
 import { red } from "@mui/material/colors";
 import GoogleMapReact from "google-map-react";
+import { API_KEY } from "../../api/config";
 
 interface TextMarkerProps {
   text: string;
@@ -135,10 +136,10 @@ const Beer: React.FC = () => {
       </Card>
       <Card sx={{ width: "50%", boxShadow: "none" }}>
         <CardContent sx={{ height: "50vh", width: "100%" }}>
-          {beer?.latitude && beer?.longitude && (
+          {beer?.latitude && beer?.longitude && API_KEY && (
             <GoogleMapReact
               bootstrapURLKeys={{
-                key: "AIzaSyCNYgk3tuETuyMuYgS4_RvvKkVQmAyP-Fg",
+                key: API_KEY,
               }}
               defaultCenter={{
                 lat: parseFloat(beer.latitude),

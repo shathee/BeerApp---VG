@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchData } from "./utils";
+import { fetchData, searchData } from "./utils";
 import { Beer } from "../../types";
 import { Link as RouterLink } from "react-router-dom";
 import { Button, Checkbox, Paper, TextField, Link } from "@mui/material";
@@ -15,11 +15,17 @@ const Home = () => {
   useEffect(fetchData.bind(this, setBeerList), []);
 
   useEffect(() => {
-    const filteredBeers = beerList.filter((beer) =>
-      beer.name.toLowerCase().includes(filterText)
-    );
-    setFilteredBeerList(filteredBeers);
-  }, [beerList, filterText]);
+    searchData(setFilteredBeerList, filterText);
+  }, [filterText]);
+
+  // useEffect(() => {
+  //   // console.log(filterText);
+  //   // const filteredBeers = beerList.filter((beer) =>
+  //   //   beer.name.toLowerCase().includes(filterText)
+  //   // );
+  //   // setFilteredBeerList(filteredBeers);
+  //   searchData.bind(this, setFilteredBeerList, filterText);
+  // }, [beerList, filterText]);
 
   useEffect(() => {
     const storedFavourites = localStorage.getItem("favouriteBeerData");
@@ -29,8 +35,11 @@ const Home = () => {
     }
   }, []);
 
-  const filterBeers = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setFilterText(e.target.value.toLowerCase());
+  const filterBeers = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value.length >= 3) {
+      setFilterText(e.target.value.toLowerCase());
+    }
+  };
 
   return (
     <article>
@@ -52,14 +61,23 @@ const Home = () => {
                 </Button>
               </div>
               <ul className={styles.list}>
-                {filteredBeerList.map((beer, index) => (
-                  <li key={index.toString()}>
-                    <Checkbox />
-                    <Link component={RouterLink} to={`/beer/${beer.id}`}>
-                      {beer.name}
-                    </Link>
-                  </li>
-                ))}
+                {filteredBeerList.length
+                  ? filteredBeerList.map((beer, index) => (
+                      <li key={index.toString()}>
+                        <Checkbox />
+                        <Link component={RouterLink} to={`/beer/${beer.id}`}>
+                          {beer.name}
+                        </Link>
+                      </li>
+                    ))
+                  : beerList.map((beer, index) => (
+                      <li key={index.toString()}>
+                        <Checkbox />
+                        <Link component={RouterLink} to={`/beer/${beer.id}`}>
+                          {beer.name}
+                        </Link>
+                      </li>
+                    ))}
               </ul>
             </div>
           </Paper>
