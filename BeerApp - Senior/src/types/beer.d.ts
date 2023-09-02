@@ -1,4 +1,4 @@
-import { TYPE } from './';
+import { TYPE } from "./";
 
 interface Beer {
   id: string;
@@ -19,4 +19,9 @@ interface Beer {
   street: string;
 }
 
-export type { Beer };
+interface FavBeer {
+  id: string;
+  name: string;
+}
+
+export type { FavBeer, Beer };

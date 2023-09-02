@@ -1,15 +1,24 @@
 import { useEffect, useState } from "react";
 import { fetchData, searchData } from "./utils";
-import { Beer } from "../../types";
+import { Beer, FavBeer } from "../../types";
 import { Link as RouterLink } from "react-router-dom";
-import { Button, Checkbox, Paper, TextField, Link } from "@mui/material";
+import {
+  Button,
+  Checkbox,
+  Paper,
+  TextField,
+  Link,
+  FormHelperText,
+} from "@mui/material";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import styles from "./Home.module.css";
 
 const Home = () => {
   const [beerList, setBeerList] = useState<Array<Beer>>([]);
   const [filteredBeerList, setFilteredBeerList] = useState<Array<Beer>>([]);
-  const [savedList, setSavedList] = useState<Array<Beer>>([]);
+  const [savedList, setSavedList] = useState<Array<FavBeer>>([]);
   const [filterText, setFilterText] = useState<string>("");
+  const [searchValidation, setSearchValidation] = useState<string>("Filter");
 
   // eslint-disable-next-line
   useEffect(fetchData.bind(this, setBeerList), []);
@@ -38,6 +47,40 @@ const Home = () => {
   const filterBeers = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value.length >= 3) {
       setFilterText(e.target.value.toLowerCase());
+      setSearchValidation("Filter");
+    } else if (e.target.value.length > 0 && e.target.value.length <= 2) {
+      setSearchValidation("Please type Minimum 3 Charecters");
+    } else {
+      setSearchValidation("Filter");
+    }
+  };
+
+  const handleAddToFavourite = (id: string, name: string) => {
+    const storedFavourites = localStorage.getItem("favouriteBeerData");
+    let favourites: FavBeer[] = storedFavourites
+      ? JSON.parse(storedFavourites)
+      : [];
+
+    if (
+      favourites.filter((beerinp: FavBeer) => beerinp.id === id).length === 0
+    ) {
+      favourites.push({ id, name });
+      localStorage.setItem("favouriteBeerData", JSON.stringify(favourites));
+      const storedFavourites = localStorage.getItem("favouriteBeerData");
+      if (storedFavourites) {
+        const favIds: FavBeer[] = JSON.parse(storedFavourites);
+        setSavedList(favIds);
+      }
+    } else {
+      const updatedList = favourites.filter(
+        (beerinp: FavBeer) => beerinp.id !== id
+      );
+      localStorage.setItem("favouriteBeerData", JSON.stringify(updatedList));
+      const storedFavourites = localStorage.getItem("favouriteBeerData");
+      if (storedFavourites) {
+        const favIds: FavBeer[] = JSON.parse(storedFavourites);
+        setSavedList(favIds);
+      }
     }
   };
 
@@ -50,9 +93,10 @@ const Home = () => {
               <div className={styles.listHeader}>
                 <TextField
                   onChange={filterBeers}
-                  label="Filter..."
-                  variant="outlined"
+                  label={searchValidation}
+                  variant="filled"
                 />
+
                 <Button
                   onClick={() => window.location.reload()}
                   variant="contained"
@@ -72,7 +116,12 @@ const Home = () => {
                     ))
                   : beerList.map((beer, index) => (
                       <li key={index.toString()}>
-                        <Checkbox />
+                        <Checkbox
+                          checked={savedList.some((fav) => fav.id === beer.id)}
+                          onClick={() =>
+                            handleAddToFavourite(beer.id, beer.name)
+                          }
+                        />
                         <Link component={RouterLink} to={`/beer/${beer.id}`}>
                           {beer.name}
                         </Link>
@@ -100,7 +149,10 @@ const Home = () => {
               <ul className={styles.list}>
                 {savedList.map((beer, index) => (
                   <li key={index.toString()}>
-                    <Checkbox />
+                    <Checkbox
+                      checked
+                      onClick={() => handleAddToFavourite(beer.id, beer.name)}
+                    />
                     <Link component={RouterLink} to={`/beer/${beer.id}`}>
                       {beer.name}
                     </Link>

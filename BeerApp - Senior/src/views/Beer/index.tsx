@@ -19,7 +19,7 @@ import LocationCityIcon from "@mui/icons-material/LocationCity";
 import SmartphoneIcon from "@mui/icons-material/Smartphone";
 import RoomIcon from "@mui/icons-material/Room";
 import WebIcon from "@mui/icons-material/Web";
-import { Beer as IBeer } from "../../types";
+import { Beer as IBeer, FavBeer } from "../../types";
 import { fetchData } from "./utils";
 import { useParams } from "react-router-dom";
 import styles from "./Beer.module.css";
@@ -46,7 +46,7 @@ const Beer: React.FC = () => {
     const storedFavourites = localStorage.getItem("favouriteBeerData");
 
     if (storedFavourites && beer) {
-      const favourites: IBeer[] = JSON.parse(storedFavourites);
+      const favourites: FavBeer[] = JSON.parse(storedFavourites);
 
       setIsInFavourite(
         favourites.filter((favourite) => favourite.id === beer.id).length > 0
@@ -57,16 +57,16 @@ const Beer: React.FC = () => {
   const handleAddToFavourite = () => {
     if (beer) {
       const storedFavourites = localStorage.getItem("favouriteBeerData");
-      let favourites: IBeer[] = storedFavourites
+      let favourites: FavBeer[] = storedFavourites
         ? JSON.parse(storedFavourites)
         : [];
 
       if (isInFavourite) {
         favourites = favourites.filter(
-          (beerinp: IBeer) => beerinp.id !== beer?.id
+          (beerinp: FavBeer) => beerinp.id !== beer?.id
         );
       } else {
-        favourites.push(beer);
+        favourites.push({ id: beer.id, name: beer.name });
       }
 
       localStorage.setItem("favouriteBeerData", JSON.stringify(favourites));
