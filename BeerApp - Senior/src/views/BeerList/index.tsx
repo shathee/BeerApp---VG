@@ -7,6 +7,7 @@ import {
   ListItemAvatar,
   ListItemButton,
   ListItemText,
+  Typography,
 } from "@mui/material";
 import SportsBar from "@mui/icons-material/SportsBar";
 import CoffeeMakerIcon from "@mui/icons-material/CoffeeMaker";
@@ -61,6 +62,17 @@ const BeerList = () => {
       field: "name",
       headerName: "Name",
       flex: 1,
+      renderCell: (params) => (
+        <Typography
+          variant="body1"
+          component="p"
+          onClick={(event) => {
+            onBeerClick(params.row.id);
+          }}
+        >
+          {params.row.name}
+        </Typography>
+      ),
     },
     {
       field: "brewery_type",
@@ -79,6 +91,7 @@ const BeerList = () => {
     },
   ];
 
+  // const handleOnCellClick = () => onBeerClick();
   return (
     <article>
       <section>
@@ -108,7 +121,7 @@ const BeerList = () => {
             initialState={{
               pagination: {
                 paginationModel: {
-                  pageSize: 15,
+                  pageSize: 10,
                 },
               },
             }}
